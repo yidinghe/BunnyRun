@@ -13,7 +13,7 @@ public class BunnyController : MonoBehaviour {
 	private Collider2D myCollider;
 	public Text scoreText;
 	private float startTime;
-
+	private int jumpsLeft = 2;
 
 	// Use this for initialization
 	void Start () {
@@ -28,8 +28,16 @@ public class BunnyController : MonoBehaviour {
 	void Update () {
 
 		if (bunnyHurtTime == -1) {
-			if (Input.GetButtonUp ("Jump")) {
-				myRigidbody.AddForce (transform.up * bunnyJumpForce);
+			if (Input.GetButtonUp ("Jump")&&jumpsLeft > 0) {
+				if (myRigidbody.velocity.y < 0) {
+					myRigidbody.velocity = Vector2.zero;
+				}
+				if (jumpsLeft == 1) {
+					myRigidbody.AddForce (transform.up * bunnyJumpForce * 0.75f);
+				} else {
+					myRigidbody.AddForce (transform.up * bunnyJumpForce);
+				}
+				jumpsLeft--;
 			}
 			myAnim.SetFloat ("vVelocity", myRigidbody.velocity.y);
 			scoreText.text = (Time.time - startTime).ToString ("0.0");
@@ -42,7 +50,7 @@ public class BunnyController : MonoBehaviour {
 	}
 
 	void OnCollisionEnter2D(Collision2D collision){
-		if(collision.collider.gameObject.layer == LayerMask.NameToLayer("Enemy")){
+		if (collision.collider.gameObject.layer == LayerMask.NameToLayer ("Enemy")) {
 
 			foreach (MoveLeft moveLefter in FindObjectsOfType<MoveLeft>()) {
 				moveLefter.enabled = false;
@@ -57,6 +65,8 @@ public class BunnyController : MonoBehaviour {
 			myRigidbody.velocity = Vector2.zero;
 			myRigidbody.AddForce (transform.up * bunnyJumpForce);
 			myCollider.enabled = false;
+		} else if (collision.collider.gameObject.layer == LayerMask.NameToLayer ("Ground")) {
+			jumpsLeft = 2;
 		}
 	}
 }
