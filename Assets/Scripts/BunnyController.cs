@@ -13,7 +13,7 @@ public class BunnyController : MonoBehaviour {
 	private Collider2D myCollider;
 	public Text scoreText;
 	private float startTime;
-	private int jumpsLeft = 2;
+	private int jumpsLeft = 1;
 	public AudioSource jumpSfx;
 	public AudioSource deathSfx;
 
@@ -74,8 +74,13 @@ public class BunnyController : MonoBehaviour {
 			myCollider.enabled = false;
 
 			deathSfx.Play();
-		} else if (collision.collider.gameObject.layer == LayerMask.NameToLayer ("Ground")) {
-			jumpsLeft = 2;
+		}
+	}
+
+	void OnCollisionStay2D(Collision2D collision){
+		//jumpsLeft = 1;
+		if (collision.collider.gameObject.layer == LayerMask.NameToLayer ("Ground")) {
+			jumpsLeft = 1;
 		}
 	}
 }
