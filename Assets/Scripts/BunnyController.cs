@@ -4,7 +4,8 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-public class BunnyController : MonoBehaviour {
+public class BunnyController : MonoBehaviour
+{
 
 	private Rigidbody2D myRigidbody;
 	private Animator myAnim;
@@ -18,8 +19,9 @@ public class BunnyController : MonoBehaviour {
 	public AudioSource deathSfx;
 
 	// Use this for initialization
-	void Start () {
-		myRigidbody = GetComponent<Rigidbody2D>();
+	void Start ()
+	{
+		myRigidbody = GetComponent<Rigidbody2D> ();
 		myAnim = GetComponent<Animator> ();
 		myCollider = GetComponent<Collider2D> ();
 
@@ -27,14 +29,16 @@ public class BunnyController : MonoBehaviour {
 	}
 	
 	// Update is called once per frame
-	void Update () {
+	void Update ()
+	{
 
 		if (Input.GetKeyDown (KeyCode.Escape)) {
 			SceneManager.LoadScene ("Title", LoadSceneMode.Single);
+			SetBestScore ();
 		}
 
 		if (bunnyHurtTime == -1) {
-			if ((Input.GetButtonUp ("Jump")||Input.GetButtonUp ("Fire1"))&&jumpsLeft > 0) {
+			if ((Input.GetButtonUp ("Jump") || Input.GetButtonUp ("Fire1")) && jumpsLeft > 0) {
 				if (myRigidbody.velocity.y < 0) {
 					myRigidbody.velocity = Vector2.zero;
 				}
@@ -44,19 +48,20 @@ public class BunnyController : MonoBehaviour {
 					myRigidbody.AddForce (transform.up * bunnyJumpForce);
 				}
 				jumpsLeft--;
-				jumpSfx.Play();
+				jumpSfx.Play ();
 			}
 			myAnim.SetFloat ("vVelocity", myRigidbody.velocity.y);
 			scoreText.text = (Time.time - startTime).ToString ("0.0");
 		} else {
 			if (Time.time > bunnyHurtTime + 2) {
-				SceneManager.LoadScene (SceneManager.GetActiveScene().name, LoadSceneMode.Single);
+				SceneManager.LoadScene (SceneManager.GetActiveScene ().name, LoadSceneMode.Single);
 				bunnyHurtTime = -1;
 			}
 		}
 	}
 
-	void OnCollisionEnter2D(Collision2D collision){
+	void OnCollisionEnter2D (Collision2D collision)
+	{
 		if (collision.collider.gameObject.layer == LayerMask.NameToLayer ("Enemy")) {
 
 			foreach (MoveLeft moveLefter in FindObjectsOfType<MoveLeft>()) {
@@ -73,14 +78,25 @@ public class BunnyController : MonoBehaviour {
 			myRigidbody.AddForce (transform.up * bunnyJumpForce);
 			myCollider.enabled = false;
 
-			deathSfx.Play();
+			deathSfx.Play ();
+
+			SetBestScore ();
 		}
 	}
 
-	void OnCollisionStay2D(Collision2D collision){
+	void OnCollisionStay2D (Collision2D collision)
+	{
 		//jumpsLeft = 1;
 		if (collision.collider.gameObject.layer == LayerMask.NameToLayer ("Ground")) {
 			jumpsLeft = 1;
+		}
+	}
+
+	private void SetBestScore() {
+		float currentBestScore = PlayerPrefs.GetFloat ("BestScore", 0);
+		float currentScore = Time.time - startTime;
+		if (currentScore > currentBestScore) {
+			PlayerPrefs.SetFloat ("BestScore", currentScore);
 		}
 	}
 }

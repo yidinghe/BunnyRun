@@ -2,18 +2,21 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Recycler : MonoBehaviour {
+public class Recycler : MonoBehaviour
+{
 
 	public Transform startPoint;
 	public Transform endPoint;
 
 	// Use this for initialization
-	void Start () {
+	void Start ()
+	{
 		
 	}
 	
 	// Update is called once per frame
-	void Update () {
+	void Update ()
+	{
 		if (transform.position.x < endPoint.position.x) {
 			float gap = endPoint.position.x - transform.position.x;
 			transform.position = new Vector3 (startPoint.position.x - gap, transform.position.y, transform.position.z);
